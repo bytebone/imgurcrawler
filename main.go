@@ -192,10 +192,10 @@ func DoRequest(url string) bool {
 func main() {
 	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
 	pDelay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
-	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
-	inputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
-	shouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
-	shouldNotStdout := parser.Flag("", "no-stdout", &argparse.Options{Help: "Do not print to standard output"})
+	pStdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
+	pInputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
+	pShouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
+	pShouldNotStdout := parser.Flag("", "no-stdout", &argparse.Options{Help: "Do not print to standard output"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
@@ -203,10 +203,11 @@ func main() {
 		return
 	}
 	iterators := make([]StringIterator, 0)
-	if len(*stdinArgs) > 0 {
-		iterators = append(iterators, &ListStringIterator{Values: *stdinArgs})
+	stdinArgs := *pStdinArgs
+	if len(stdinArgs) > 0 {
+		iterators = append(iterators, &ListStringIterator{Values: stdinArgs})
 	}
-	for _, file := range *inputFilePaths {
+	for _, file := range *pInputFilePaths {
 		iterators = append(iterators, &FileStringIterator{Path: file.Name()})
 	}
 	if len(iterators) == 0 {
@@ -215,8 +216,8 @@ func main() {
 	iterator := &CombinerStringIterator{Iterators: iterators}
 	defer iterator.Close()
 
-	shouldNotify := !(*shouldNotNotify)
-	shouldPrint := !(*shouldNotStdout)
+	shouldNotify := !(*pShouldNotNotify)
+	shouldPrint := !(*pShouldNotStdout)
 	delay := time.Duration(*pDelay)
 
 	var count int
