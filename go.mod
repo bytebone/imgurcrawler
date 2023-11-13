@@ -3,6 +3,7 @@ module github.com/enzo-santos/imgurcrawler
 go 1.21.3
 
 require (
+	github.com/akamensky/argparse v1.4.0 // indirect
 	github.com/gen2brain/beeep v0.0.0-20230907135156-1a38885a97fc // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect

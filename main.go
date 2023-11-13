@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/akamensky/argparse"
 	"github.com/gen2brain/beeep"
 	"io"
 	"log"
@@ -189,12 +190,15 @@ func DoRequest(url string) bool {
 }
 
 func main() {
-	iterator := &CombinerStringIterator{
-		Iterators: []StringIterator{
-			&ListStringIterator{Values: []string{"P2ylGmE", "peQEYVQ"}},
-			&FileStringIterator{Path: "test.txt"},
-		},
+	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
+	stdinArgs := parser.List("i", "input", &argparse.Options{Help: "As string"})
+
+	err := parser.Parse(os.Args)
+	if err != nil {
+		fmt.Print(parser.Usage(err))
+		return
 	}
+	iterator := &ListStringIterator{Values: *stdinArgs}
 	defer iterator.Close()
 
 	var count int
