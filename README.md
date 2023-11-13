@@ -27,11 +27,13 @@ import (
 )
 ```
 
-This package imports a single function named `DownloadUrl`. Its single
-parameter is an Imgur ID. The function will try to download the image stored
-with the given ID. If there is no image, it returns *false*. Otherwise, it
-downloads the image with the appropriate extension to *build/images* in the
-current directory and returns *true*.  
+This package imports a single function named `DownloadUrl`. Its receives an
+Imgur ID as its first parameter and the directory to where the file will be
+downloaded as its second parameter.
+
+The function will then try to download the Imgur image with the given ID. If
+there is no image, it returns *false*. Otherwise, it downloads the image with
+the appropriate extension to the given directory and returns *true*.  
 
 
 ## Command-line usage

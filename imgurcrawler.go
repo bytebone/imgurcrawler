@@ -19,7 +19,7 @@ var magicNumbers = map[[4]byte]string{
 	{0x89, 0x50, 0x4e, 0x47}: "png",
 }
 
-func DownloadUrl(id string) bool {
+func DownloadUrl(id string, dpath string) bool {
 	client := &http.Client{}
 
 	url := fmt.Sprintf("https://i.imgur.com/%s.png", id)
@@ -63,7 +63,6 @@ func DownloadUrl(id string) bool {
 		panic(fmt.Errorf("Invalid magic number: %v", bytes[:4]))
 	}
 
-	dpath := path.Join("build", "images")
 	os.MkdirAll(dpath, 755)
 
 	fname := res.Request.URL.Path[1:]
