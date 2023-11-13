@@ -207,6 +207,9 @@ func main() {
 	if inputFilePath != nil && len(*inputFilePath) > 1 {
 		iterators = append(iterators, &FileStringIterator{Path: *inputFilePath})
 	}
+	if len(iterators) == 0 {
+		iterators = append(iterators, &RandomStringIterator{})
+	}
 	iterator := &CombinerStringIterator{Iterators: iterators}
 	defer iterator.Close()
 
