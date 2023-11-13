@@ -191,7 +191,7 @@ func DoRequest(url string) bool {
 
 func main() {
 	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
-	delay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
+	pDelay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	inputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
 	shouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
@@ -217,6 +217,7 @@ func main() {
 
 	shouldNotify := !(*shouldNotNotify)
 	shouldPrint := !(*shouldNotStdout)
+	delay := time.Duration(*pDelay)
 
 	var count int
 	for iterator.HasNext() {
@@ -242,6 +243,8 @@ func main() {
 				fmt.Printf("miss (%d)\n", count)
 			}
 		}
-		time.Sleep(time.Duration(*delay) * time.Second)
+		if delay > 0 {
+			time.Sleep(delay * time.Second)
+		}
 	}
 }
