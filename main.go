@@ -46,6 +46,21 @@ func (self *RandomStringIterator) next() string {
 	return string(path)
 }
 
+type ListStringIterator struct {
+	index  int
+	values []string
+}
+
+func (self *ListStringIterator) hasNext() bool {
+	return self.index < len(self.values)
+}
+
+func (self *ListStringIterator) next() string {
+	value := self.values[self.index]
+	self.index += 1
+	return value
+}
+
 func DoRequest(url string) bool {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -105,7 +120,7 @@ func DoRequest(url string) bool {
 }
 
 func main() {
-	iterator := &RandomStringIterator{}
+	iterator := &ListStringIterator{values: []string{"AcKNnHq", "tRsbyxh", "skR5k9l"}}
 
 	var count int
 	for iterator.hasNext() {
