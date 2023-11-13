@@ -201,7 +201,7 @@ func main() {
 		return
 	}
 	iterators := make([]StringIterator, 0)
-	if len(*stdinArgs) > 1 {
+	if len(*stdinArgs) > 0 {
 		iterators = append(iterators, &ListStringIterator{Values: *stdinArgs})
 	}
 	if inputFilePath != nil && len(*inputFilePath) > 1 {
