@@ -1,23 +1,17 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/akamensky/argparse"
+	"github.com/enzo-santos/imgurcrawler/internal/iterating"
 	"github.com/gen2brain/beeep"
 	"io"
-	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"path"
 	"strings"
 	"time"
 )
-
-const asciiLowercase = "abcdefghijklmnopqrstuvwxyz"
-const asciiUppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const digits = "0123456789"
 
 var magicNumbers = map[[4]byte]string{
 	{0xff, 0xd8, 0xff, 0xe0}: "jpg",
@@ -27,108 +21,6 @@ var magicNumbers = map[[4]byte]string{
 	{0xff, 0xd8, 0xff, 0xdb}: "jpg",
 	{0x47, 0x49, 0x46, 0x38}: "gif",
 	{0x89, 0x50, 0x4e, 0x47}: "png",
-}
-
-type StringIterator interface {
-	HasNext() bool
-	Next() string
-	Close()
-}
-
-type RandomStringIterator struct{}
-
-func (self *RandomStringIterator) HasNext() bool {
-	return true
-}
-
-func (self *RandomStringIterator) Next() string {
-	characters := fmt.Sprintf("%s%s%s", asciiLowercase, asciiUppercase, digits)
-	path := make([]byte, 7)
-	for i := 0; i < 7; i++ {
-		path[i] = characters[rand.Intn(len(characters))]
-	}
-	return string(path)
-}
-
-func (self *RandomStringIterator) Close() {}
-
-type ListStringIterator struct {
-	Values []string
-	index  int
-}
-
-func (self *ListStringIterator) HasNext() bool {
-	return self.index < len(self.Values)
-}
-
-func (self *ListStringIterator) Next() string {
-	value := self.Values[self.index]
-	self.index += 1
-	return value
-}
-
-func (self *ListStringIterator) Close() {}
-
-type FileStringIterator struct {
-	Path    string
-	file    *os.File
-	scanner *bufio.Scanner
-}
-
-func (self *FileStringIterator) HasNext() bool {
-	scanner := self.scanner
-	if scanner == nil {
-		file, err := os.Open(self.Path)
-		if err != nil {
-			log.Println(err)
-			return false
-		}
-		self.file = file
-		scanner = bufio.NewScanner(file)
-		self.scanner = scanner
-	}
-	return scanner.Scan()
-}
-
-func (self *FileStringIterator) Next() string {
-	return self.scanner.Text()
-}
-
-func (self *FileStringIterator) Close() {
-	file := self.file
-	if file != nil {
-		file.Close()
-	}
-}
-
-type CombinerStringIterator struct {
-	Iterators []StringIterator
-	index     int
-}
-
-func (self *CombinerStringIterator) HasNext() bool {
-	if len(self.Iterators) == 0 {
-		return false
-	}
-	iterator := self.Iterators[self.index]
-	if iterator.HasNext() {
-		return true
-	}
-	if self.index < len(self.Iterators)-1 {
-		self.index += 1
-		return self.HasNext()
-	}
-	return false
-}
-
-func (self *CombinerStringIterator) Next() string {
-	return self.Iterators[self.index].Next()
-}
-
-func (self *CombinerStringIterator) Close() {
-	for _, iterator := range self.Iterators {
-		iterator.Close()
-	}
 }
 
 func DoRequest(url string) bool {
@@ -190,7 +82,7 @@ func DoRequest(url string) bool {
 }
 
 func main() {
-	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
+	parser := argparse.NewParser("imgurcrawler", "An image crawler that collects random images from Imgur")
 	pDelay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	pStdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	pInputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
@@ -202,18 +94,18 @@ func main() {
 		fmt.Print(parser.Usage(err))
 		return
 	}
-	iterators := make([]StringIterator, 0)
+	iterators := make([]iterating.StringIterator, 0)
 	stdinArgs := *pStdinArgs
 	if len(stdinArgs) > 0 {
-		iterators = append(iterators, &ListStringIterator{Values: stdinArgs})
+		iterators = append(iterators, &iterating.ListStringIterator{Values: stdinArgs})
 	}
 	for _, file := range *pInputFilePaths {
-		iterators = append(iterators, &FileStringIterator{Path: file.Name()})
+		iterators = append(iterators, &iterating.FileStringIterator{Path: file.Name()})
 	}
 	if len(iterators) == 0 {
-		iterators = append(iterators, &RandomStringIterator{})
+		iterators = append(iterators, &iterating.RandomStringIterator{})
 	}
-	iterator := &CombinerStringIterator{Iterators: iterators}
+	iterator := &iterating.CombinerStringIterator{Iterators: iterators}
 	defer iterator.Close()
 
 	shouldNotify := !(*pShouldNotNotify)
