@@ -191,6 +191,7 @@ func DoRequest(url string) bool {
 
 func main() {
 	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
+	delay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	inputFilePath := parser.String("f", "file", &argparse.Options{Help: "Input as file"})
 	isQuiet := parser.Flag("q", "quiet", &argparse.Options{Help: "Do not notify"})
@@ -232,6 +233,6 @@ func main() {
 		} else {
 			fmt.Printf("miss (%d)\n", count)
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(time.Duration(*delay) * time.Second)
 	}
 }
