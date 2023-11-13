@@ -26,7 +26,18 @@ var magicNumbers = map[[4]byte]string{
 	{0x89, 0x50, 0x4e, 0x47}: "png",
 }
 
-func GetFilename() string {
+type StringIterator interface {
+	hasNext() bool
+	next() string
+}
+
+type RandomStringIterator struct{}
+
+func (self *RandomStringIterator) hasNext() bool {
+	return true
+}
+
+func (self *RandomStringIterator) next() string {
 	characters := fmt.Sprintf("%s%s%s", asciiLowercase, asciiUppercase, digits)
 	path := make([]byte, 7)
 	for i := 0; i < 7; i++ {
@@ -94,19 +105,21 @@ func DoRequest(url string) bool {
 }
 
 func main() {
-	count := 0
-	for {
-		filename := GetFilename()
+	iterator := &RandomStringIterator{}
+
+	var count int
+	for iterator.hasNext() {
+		filename := iterator.next()
 		url := fmt.Sprintf("https://i.imgur.com/%s.png", filename)
 		fmt.Printf("%32s=", url)
 		hit := DoRequest(url)
 		if hit {
+			count += 1
 			fmt.Println("hit")
 			err := beeep.Notify("Nova imagem encontrada", url, "assets/information.png")
 			if err != nil {
 				panic(err)
 			}
-			count++
 			break
 		} else {
 			fmt.Printf("miss (%d)\n", count)
