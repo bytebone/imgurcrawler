@@ -195,7 +195,7 @@ func main() {
 	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	inputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
 	shouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
-	shouldNotStdout := parser.Flag("", "no-stdout", &argparse.Options{Help: "Do not print to standart output"})
+	shouldNotStdout := parser.Flag("", "no-stdout", &argparse.Options{Help: "Do not print to standard output"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
