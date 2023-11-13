@@ -193,7 +193,7 @@ func main() {
 	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
 	delay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
-	inputFilePath := parser.String("f", "file", &argparse.Options{Help: "Input as file"})
+	inputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
 	isQuiet := parser.Flag("q", "quiet", &argparse.Options{Help: "Do not notify"})
 
 	err := parser.Parse(os.Args)
@@ -205,8 +205,8 @@ func main() {
 	if len(*stdinArgs) > 0 {
 		iterators = append(iterators, &ListStringIterator{Values: *stdinArgs})
 	}
-	if inputFilePath != nil && len(*inputFilePath) > 1 {
-		iterators = append(iterators, &FileStringIterator{Path: *inputFilePath})
+	for _, file := range *inputFilePaths {
+		iterators = append(iterators, &FileStringIterator{Path: file.Name()})
 	}
 	if len(iterators) == 0 {
 		iterators = append(iterators, &RandomStringIterator{})
