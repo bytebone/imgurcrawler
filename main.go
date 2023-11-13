@@ -229,7 +229,6 @@ func main() {
 					panic(err)
 				}
 			}
-			break
 		} else {
 			fmt.Printf("miss (%d)\n", count)
 		}
