@@ -54,7 +54,7 @@ func main() {
 				fmt.Println("hit")
 			}
 			if shouldNotify {
-				err := beeep.Notify("Nova imagem encontrada", id, "assets/information.png")
+				err := beeep.Notify("New image found", id, "assets/information.png")
 				if err != nil {
 					panic(err)
 				}
