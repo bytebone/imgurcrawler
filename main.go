@@ -191,14 +191,22 @@ func DoRequest(url string) bool {
 
 func main() {
 	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
-	stdinArgs := parser.List("i", "input", &argparse.Options{Help: "As string"})
+	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
+	inputFilePath := parser.String("f", "file", &argparse.Options{Help: "Input as file"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
 		fmt.Print(parser.Usage(err))
 		return
 	}
-	iterator := &ListStringIterator{Values: *stdinArgs}
+	iterators := make([]StringIterator, 0)
+	if len(*stdinArgs) > 1 {
+		iterators = append(iterators, &ListStringIterator{Values: *stdinArgs})
+	}
+	if inputFilePath != nil && len(*inputFilePath) > 1 {
+		iterators = append(iterators, &FileStringIterator{Path: *inputFilePath})
+	}
+	iterator := &CombinerStringIterator{Iterators: iterators}
 	defer iterator.Close()
 
 	var count int
