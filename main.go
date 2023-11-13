@@ -193,6 +193,7 @@ func main() {
 	parser := argparse.NewParser("imgurcrawler", "A image crawler that collects random images from Imgur")
 	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	inputFilePath := parser.String("f", "file", &argparse.Options{Help: "Input as file"})
+	isQuiet := parser.Flag("q", "quiet", &argparse.Options{Help: "Do not notify"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
@@ -218,9 +219,11 @@ func main() {
 		if hit {
 			count += 1
 			fmt.Println("hit")
-			err := beeep.Notify("Nova imagem encontrada", url, "assets/information.png")
-			if err != nil {
-				panic(err)
+			if !(*isQuiet) {
+				err := beeep.Notify("Nova imagem encontrada", url, "assets/information.png")
+				if err != nil {
+					panic(err)
+				}
 			}
 			break
 		} else {
