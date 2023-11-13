@@ -194,7 +194,8 @@ func main() {
 	delay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	stdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	inputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
-	isQuiet := parser.Flag("q", "quiet", &argparse.Options{Help: "Do not notify"})
+	shouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
+	shouldNotStdout := parser.Flag("", "no-stdout", &argparse.Options{Help: "Do not print to standart output"})
 
 	err := parser.Parse(os.Args)
 	if err != nil {
@@ -214,23 +215,32 @@ func main() {
 	iterator := &CombinerStringIterator{Iterators: iterators}
 	defer iterator.Close()
 
+	shouldNotify := !(*shouldNotNotify)
+	shouldPrint := !(*shouldNotStdout)
+
 	var count int
 	for iterator.HasNext() {
 		filename := iterator.Next()
 		url := fmt.Sprintf("https://i.imgur.com/%s.png", filename)
-		fmt.Printf("%32s=", url)
+		if shouldPrint {
+			fmt.Printf("%32s=", url)
+		}
 		hit := DoRequest(url)
 		if hit {
 			count += 1
-			fmt.Println("hit")
-			if !(*isQuiet) {
+			if shouldPrint {
+				fmt.Println("hit")
+			}
+			if shouldNotify {
 				err := beeep.Notify("Nova imagem encontrada", url, "assets/information.png")
 				if err != nil {
 					panic(err)
 				}
 			}
 		} else {
-			fmt.Printf("miss (%d)\n", count)
+			if shouldPrint {
+				fmt.Printf("miss (%d)\n", count)
+			}
 		}
 		time.Sleep(time.Duration(*delay) * time.Second)
 	}
