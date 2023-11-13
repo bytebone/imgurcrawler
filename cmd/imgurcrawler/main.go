@@ -43,19 +43,18 @@ func main() {
 
 	var count int
 	for iterator.HasNext() {
-		filename := iterator.Next()
-		url := fmt.Sprintf("https://i.imgur.com/%s.png", filename)
+		id := iterator.Next()
 		if shouldPrint {
-			fmt.Printf("%32s=", url)
+			fmt.Printf("%s=", id)
 		}
-		hit := imgurcrawler.DownloadUrl(url)
+		hit := imgurcrawler.DownloadUrl(id)
 		if hit {
 			count += 1
 			if shouldPrint {
 				fmt.Println("hit")
 			}
 			if shouldNotify {
-				err := beeep.Notify("Nova imagem encontrada", url, "assets/information.png")
+				err := beeep.Notify("Nova imagem encontrada", id, "assets/information.png")
 				if err != nil {
 					panic(err)
 				}

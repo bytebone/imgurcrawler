@@ -19,8 +19,10 @@ var magicNumbers = map[[4]byte]string{
 	{0x89, 0x50, 0x4e, 0x47}: "png",
 }
 
-func DownloadUrl(url string) bool {
+func DownloadUrl(id string) bool {
 	client := &http.Client{}
+
+	url := fmt.Sprintf("https://i.imgur.com/%s.png", id)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		panic(err)

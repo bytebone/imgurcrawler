@@ -28,10 +28,10 @@ import (
 ```
 
 This package imports a single function named `DownloadUrl`. Its single
-parameter is an Imgur URL. The function will try to download the image stored
-there. If there is no image, it returns *false*. Otherwise, it downloads the
-image with the appropriate extension to *build/images* in the current
-directory and returns *true*.  
+parameter is an Imgur ID. The function will try to download the image stored
+with the given ID. If there is no image, it returns *false*. Otherwise, it
+downloads the image with the appropriate extension to *build/images* in the
+current directory and returns *true*.  
 
 
 ## Command-line usage
