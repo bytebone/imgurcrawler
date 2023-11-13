@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/gen2brain/beeep"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -27,17 +29,18 @@ var magicNumbers = map[[4]byte]string{
 }
 
 type StringIterator interface {
-	hasNext() bool
-	next() string
+	HasNext() bool
+	Next() string
+	Close()
 }
 
 type RandomStringIterator struct{}
 
-func (self *RandomStringIterator) hasNext() bool {
+func (self *RandomStringIterator) HasNext() bool {
 	return true
 }
 
-func (self *RandomStringIterator) next() string {
+func (self *RandomStringIterator) Next() string {
 	characters := fmt.Sprintf("%s%s%s", asciiLowercase, asciiUppercase, digits)
 	path := make([]byte, 7)
 	for i := 0; i < 7; i++ {
@@ -46,19 +49,55 @@ func (self *RandomStringIterator) next() string {
 	return string(path)
 }
 
+func (self *RandomStringIterator) Close() {}
+
 type ListStringIterator struct {
 	index  int
 	values []string
 }
 
-func (self *ListStringIterator) hasNext() bool {
+func (self *ListStringIterator) HasNext() bool {
 	return self.index < len(self.values)
 }
 
-func (self *ListStringIterator) next() string {
+func (self *ListStringIterator) Next() string {
 	value := self.values[self.index]
 	self.index += 1
 	return value
+}
+
+func (self *ListStringIterator) Close() {}
+
+type FileStringIterator struct {
+	Path    string
+	file    *os.File
+	scanner *bufio.Scanner
+}
+
+func (self *FileStringIterator) HasNext() bool {
+	scanner := self.scanner
+	if scanner == nil {
+		file, err := os.Open(self.Path)
+		if err != nil {
+			log.Println(err)
+			return false
+		}
+		self.file = file
+		scanner = bufio.NewScanner(file)
+		self.scanner = scanner
+	}
+	return scanner.Scan()
+}
+
+func (self *FileStringIterator) Next() string {
+	return self.scanner.Text()
+}
+
+func (self *FileStringIterator) Close() {
+	file := self.file
+	if file != nil {
+		file.Close()
+	}
 }
 
 func DoRequest(url string) bool {
@@ -120,11 +159,12 @@ func DoRequest(url string) bool {
 }
 
 func main() {
-	iterator := &ListStringIterator{values: []string{"AcKNnHq", "tRsbyxh", "skR5k9l"}}
+	iterator := &FileStringIterator{Path: "test.txt"}
+	defer iterator.Close()
 
 	var count int
-	for iterator.hasNext() {
-		filename := iterator.next()
+	for iterator.HasNext() {
+		filename := iterator.Next()
 		url := fmt.Sprintf("https://i.imgur.com/%s.png", filename)
 		fmt.Printf("%32s=", url)
 		hit := DoRequest(url)
