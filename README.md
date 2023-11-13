@@ -27,13 +27,22 @@ import (
 )
 ```
 
-This package imports a single function named `DownloadUrl`. Its receives an
+This package imports a single function named `DownloadImage`. Its receives an
 Imgur ID as its first parameter and the directory to where the file will be
 downloaded as its second parameter.
 
 The function will then try to download the Imgur image with the given ID. If
 there is no image, it returns *false*. Otherwise, it downloads the image with
-the appropriate extension to the given directory and returns *true*.  
+the appropriate extension to the given directory and returns *true*:
+
+```go
+ok := imgurcrawler.DownloadImage("L1PQAPa", "build/images")
+if ok {
+	// Downloads https://i.imgur.com/L1PQAPa.jpeg to the build/images directory
+} else {
+	// Does nothing
+}
+```
 
 
 ## Command-line usage
@@ -93,4 +102,4 @@ imgurcrawler --delay 2
 ```
 
 It waits for the given amount of seconds before trying to find another Imgur
-image.
+image. The default delay is 1 second.
