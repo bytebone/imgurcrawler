@@ -52,16 +52,16 @@ func (self *RandomStringIterator) Next() string {
 func (self *RandomStringIterator) Close() {}
 
 type ListStringIterator struct {
+	Values []string
 	index  int
-	values []string
 }
 
 func (self *ListStringIterator) HasNext() bool {
-	return self.index < len(self.values)
+	return self.index < len(self.Values)
 }
 
 func (self *ListStringIterator) Next() string {
-	value := self.values[self.index]
+	value := self.Values[self.index]
 	self.index += 1
 	return value
 }
@@ -97,6 +97,36 @@ func (self *FileStringIterator) Close() {
 	file := self.file
 	if file != nil {
 		file.Close()
+	}
+}
+
+type CombinerStringIterator struct {
+	Iterators []StringIterator
+	index     int
+}
+
+func (self *CombinerStringIterator) HasNext() bool {
+	if len(self.Iterators) == 0 {
+		return false
+	}
+	iterator := self.Iterators[self.index]
+	if iterator.HasNext() {
+		return true
+	}
+	if self.index < len(self.Iterators)-1 {
+		self.index += 1
+		return self.HasNext()
+	}
+	return false
+}
+
+func (self *CombinerStringIterator) Next() string {
+	return self.Iterators[self.index].Next()
+}
+
+func (self *CombinerStringIterator) Close() {
+	for _, iterator := range self.Iterators {
+		iterator.Close()
 	}
 }
 
@@ -159,7 +189,12 @@ func DoRequest(url string) bool {
 }
 
 func main() {
-	iterator := &FileStringIterator{Path: "test.txt"}
+	iterator := &CombinerStringIterator{
+		Iterators: []StringIterator{
+			&ListStringIterator{Values: []string{"P2ylGmE", "peQEYVQ"}},
+			&FileStringIterator{Path: "test.txt"},
+		},
+	}
 	defer iterator.Close()
 
 	var count int
