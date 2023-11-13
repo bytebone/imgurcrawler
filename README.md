@@ -11,22 +11,43 @@ whenever it finds an image. It also detects if the downloaded image is
 a *.gif*, a *.png* or a *.jpg*, renaming the file accordingly.
 
 
-## Installing
+## Usage
 
-Clone this repository:
+Run the following in your command prompt:
 
 ```shell
-git clone https://github.com/enzo-santos/imgurcrawler.git
-cd imgurcrawler
+go get -u github.com/enzo-santos/imgurcrawler
 ```
 
+Import it into your code as
 
-## Usage
+```go
+import (
+	"github.com/enzo-santos/imgurcrawler"
+)
+```
+
+This package imports a single function named `DownloadUrl`. Its single
+parameter is an Imgur URL. The function will try to download the image stored
+there. If there is no image, it returns *false*. Otherwise, it downloads the
+image with the appropriate extension to *build/images* in the current
+directory and returns *true*.  
+
+
+## Command-line usage
+
+To access the executable of this package, run the following:
+
+```shell
+go install github.com/enzo-santos/imgurcrawler/cmd/imgurcrawler@latest
+```
+
+It'll download it to the *bin* folder of the path shown by `go env GOPATH`.
 
 The basic usage is
 
 ```shell
-go run main.go
+imgurcrawler
 ```
 
 It tries to find random Imgur images *ad infinitum*.
@@ -37,14 +58,14 @@ It tries to find random Imgur images *ad infinitum*.
 All creational flags can be used with each other.
 
 ```shell
-go run main.go -i "FQHZlGg" -i "olTru93"
+imgurcrawler -i "FQHZlGg" -i "olTru93"
 ```
 
 It tries to find Imgur images for each `-i` argument given. Can be used one or
 more times.
 
 ```shell
-go run main.go -f args.txt
+imgurcrawler -f args.txt
 ```
 
 It tries to find Imgur images for each line of the `-f` argument given, as a
@@ -54,19 +75,19 @@ file. Can be used one or more times.
 ### Behavioral flags
 
 ```shell
-go run main.go --no-notify
+imgurcrawler --no-notify
 ```
 
 If it finds any Imgur image, it'll not display the OS-notification.
 
 ```shell
-go run main.go --no-stdout
+imgurcrawler --no-stdout
 ```
 
 It'll not print anything to the standard output (*stdout*).
 
 ```shell
-go run main.go --delay 2
+imgurcrawler --delay 2
 ```
 
 It waits for the given amount of seconds before trying to find another Imgur
