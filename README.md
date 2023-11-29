@@ -23,7 +23,7 @@ Import it into your code as
 
 ```go
 import (
-	"github.com/enzo-santos/imgurcrawler"
+    "github.com/enzo-santos/imgurcrawler"
 )
 ```
 
@@ -41,9 +41,10 @@ the appropriate extension to the given directory and returns *true*:
 ```go
 ok := imgurcrawler.DownloadImage("L1PQAPa", "build/images")
 if ok {
-	// Downloads https://i.imgur.com/L1PQAPa.jpeg to the build/images directory
+    // A image from https://i.imgur.com/L1PQAPa.jpeg was downloaded to the
+    // build/images directory
 } else {
-	// Does nothing
+    // No action was executed
 }
 ```
 
@@ -54,7 +55,7 @@ valid Imgur image:
 
 ```go
 id := imgurcrawler.RandomId()
-// id now contains a string that matches `[A-Za-z0-9]{7}`
+// `id` now contains a string that matches `[A-Za-z0-9]{7}`
 ```
 
 
