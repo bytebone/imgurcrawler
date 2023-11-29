@@ -39,12 +39,16 @@ there is no image, it returns *false*. Otherwise, it downloads the image with
 the appropriate extension to the given directory and returns *true*:
 
 ```go
-ok := imgurcrawler.DownloadImage("L1PQAPa", "build/images")
+ok, err := imgurcrawler.DownloadImage("L1PQAPa", "build/images")
+if err != nil {
+    // An error occurred while trying to download, no action was executed
+    panic(err)
+}
+
 if ok {
-    // A image from https://i.imgur.com/L1PQAPa.jpeg was downloaded to the
-    // build/images directory
+    // The build/images directory now contains a 'L1PQAPa.(png|gif|jpg)' file
 } else {
-    // No action was executed
+    // No image was found, no action was executed
 }
 ```
 

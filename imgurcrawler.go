@@ -25,13 +25,13 @@ func RandomId() string {
 	return iterator.Next()
 }
 
-func DownloadImage(id string, dpath string) bool {
+func DownloadImage(id string, dpath string) (bool, error) {
 	client := &http.Client{}
 
 	url := fmt.Sprintf("https://i.imgur.com/%s.png", id)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("Error while trying to create GET %s: %v", url, err)
 	}
 
 	req.Header.Set("authority", "i.imgur.com")
@@ -51,22 +51,22 @@ func DownloadImage(id string, dpath string) bool {
 
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("Error while trying to execute GET %s, %v", url, err)
 	}
 	defer res.Body.Close()
 
 	if res.Request.URL.Path == "/removed.png" {
-		return false
+		return false, nil
 	}
 
 	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("Error while trying to read the request: %v", err)
 	}
 
 	extension, ok := magicNumbers[([4]byte)(bytes[:4])]
 	if !ok {
-		panic(fmt.Errorf("Invalid magic number: %v", bytes[:4]))
+		return false, fmt.Errorf("Received an invalid magic number: %v", bytes[:4])
 	}
 
 	os.MkdirAll(dpath, 755)
@@ -78,8 +78,7 @@ func DownloadImage(id string, dpath string) bool {
 
 	err = os.WriteFile(fpath, bytes, 644)
 	if err != nil {
-		panic(err)
+		return false, fmt.Errorf("Error while trying to write the image file: %v", err)
 	}
-
-	return true
+	return true, nil
 }

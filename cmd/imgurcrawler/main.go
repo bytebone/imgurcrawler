@@ -47,7 +47,11 @@ func main() {
 		if shouldPrint {
 			fmt.Printf("%s=", id)
 		}
-		hit := imgurcrawler.DownloadImage(id, "build/images")
+		hit, err := imgurcrawler.DownloadImage(id, "build/images")
+		if err != nil {
+			panic(err)
+		}
+
 		if hit {
 			count += 1
 			if shouldPrint {
