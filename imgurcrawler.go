@@ -2,6 +2,7 @@ package imgurcrawler
 
 import (
 	"fmt"
+	"github.com/enzo-santos/imgurcrawler/internal/iterating"
 	"io"
 	"net/http"
 	"os"
@@ -17,6 +18,11 @@ var magicNumbers = map[[4]byte]string{
 	{0xff, 0xd8, 0xff, 0xdb}: "jpg",
 	{0x47, 0x49, 0x46, 0x38}: "gif",
 	{0x89, 0x50, 0x4e, 0x47}: "png",
+}
+
+func RandomId() string {
+	iterator := &iterating.RandomStringIterator{}
+	return iterator.Next()
 }
 
 func DownloadImage(id string, dpath string) bool {

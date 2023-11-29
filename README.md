@@ -27,9 +27,12 @@ import (
 )
 ```
 
-This package imports a single function named `DownloadImage`. Its receives an
-Imgur ID as its first parameter and the directory to where the file will be
-downloaded as its second parameter.
+This package imports the following functions:
+
+- **`DownloadImage`**
+
+Receives an Imgur ID as its first parameter and the directory to where the file
+will be downloaded as its second parameter.
 
 The function will then try to download the Imgur image with the given ID. If
 there is no image, it returns *false*. Otherwise, it downloads the image with
@@ -42,6 +45,16 @@ if ok {
 } else {
 	// Does nothing
 }
+```
+
+- **`RandomId`**
+
+Returns a string that conforms to an Imgur ID. It may or may not represent a
+valid Imgur image:
+
+```go
+id := imgurcrawler.RandomId()
+// id now contains a string that matches `[A-Za-z0-9]{7}`
 ```
 
 
