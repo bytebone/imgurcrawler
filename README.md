@@ -16,6 +16,7 @@ a *.gif*, a *.png* or a *.jpg*, renaming the file accordingly.
 Run the following in your command prompt:
 
 ```shell
+cd your-go-project-path
 go get -u github.com/enzo-santos/imgurcrawler
 ```
 
@@ -27,40 +28,38 @@ import (
 )
 ```
 
-This package imports the following functions:
-
-- **`DownloadImage`**
-
-Receives an Imgur ID as its first parameter and the directory to where the file
-will be downloaded as its second parameter.
-
-The function will then try to download the Imgur image with the given ID. If
-there is no image, it returns *false*. Otherwise, it downloads the image with
-the appropriate extension to the given directory and returns *true*:
+Sample usage:
 
 ```go
-ok, err := imgurcrawler.DownloadImage("L1PQAPa", "build/images")
+img, err := imgurcrawler.GetImage("L1PQAPa")
+// This executes a network request to https://i.imgur.com
+// `img` is an instance of `imgurcrawler.ImgurImage`
+
 if err != nil {
-    // An error occurred while trying to download, no action was executed
     panic(err)
 }
 
-if ok {
-    // The build/images directory now contains a 'L1PQAPa.(png|gif|jpg)' file
-} else {
-    // No image was found, no action was executed
-}
+fmt.Println(img.Id)     // = "L1PQAPa"
+fmt.Println(img.Exists) // = (if it exists in the Imgur website: true or false)
+
+fmt.Println(img.Filename)  // = "L1PQAPa.png" (always ends with `.png`)
+fmt.Println(img.Extension) // = (the true extension of this image file: "jpg", "png"...)
+fmt.Println(img.Content)   // = (the contents of this image file, as []byte)
+
+fmt.Println(img.Name()) // = (the true name of this file: '<img.Id>.<img.Extension>')
+
+err := imgurcrawler.SaveImage(img, "/home/username/Downloads")
+if err != nil {
+    panic(err)
+} 
+// At this point of execution, the image is downloaded to the provided directory
+
+randomId := imgurcrawler.RandomId() 
+// A random Imgur ID that can be provided to `imgurcrawler.ImgurImage`
+// This does not necessarily refer to an existing image in the Imgur website
 ```
 
-- **`RandomId`**
-
-Returns a string that conforms to an Imgur ID. It may or may not represent a
-valid Imgur image:
-
-```go
-id := imgurcrawler.RandomId()
-// `id` now contains a string that matches `[A-Za-z0-9]{7}`
-```
+See the source code for better documentation.
 
 
 ## Command-line usage
