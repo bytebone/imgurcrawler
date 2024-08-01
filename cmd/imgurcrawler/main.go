@@ -12,7 +12,7 @@ import (
 
 func main() {
 	parser := argparse.NewParser("imgurcrawler", "An image crawler that collects random images from Imgur")
-	pDelay := parser.Int("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
+	pDelay := parser.Float("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	pStdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	pInputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
 	pShouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
