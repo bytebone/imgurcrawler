@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/akamensky/argparse"
 	"github.com/enzo-santos/imgurcrawler"
 	"github.com/enzo-santos/imgurcrawler/internal/iterating"
 	"github.com/gen2brain/beeep"
-	"os"
-	"time"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 	pDelay := parser.Float("d", "delay", &argparse.Options{Help: "Delay between tries, in seconds", Default: 1})
 	pStdinArgs := parser.StringList("i", "input", &argparse.Options{Help: "Input as strings"})
 	pInputFilePaths := parser.FileList("f", "file", os.O_RDONLY, 0444, &argparse.Options{Help: "Input as files"})
+	pOutputFilePath := parser.String("o", "output", &argparse.Options{Help: "Output path. Will be created if it does not exist", Default: "build/images"})
 	pShouldNotNotify := parser.Flag("", "no-notify", &argparse.Options{Help: "Do not launch OS-notification on hit"})
 	pShouldNotStdout := parser.Flag("", "no-stdout", &argparse.Options{Help: "Do not print to standard output"})
 
@@ -53,7 +55,7 @@ func main() {
 		}
 
 		if img.Exists {
-			err := imgurcrawler.SaveImage(img, "build/images")
+			err := imgurcrawler.SaveImage(img, pOutputFilePath)
 			if err != nil {
 				panic(err)
 			}

@@ -154,14 +154,14 @@ func GetImage(id string) (img ImgurImage, rerr error) {
 //
 // If `dpath` does not exist, it will be created recursively:
 //
-//  id := imgurcrawler.RandomId()
-//  img, err := imgurcrawler.GetImage(id)
-//  if err != nil {
-//      panic(err)
-//  }
-//  imgurcrawler.SaveImage(img, "/path/to/save/directory")
-func SaveImage(img ImgurImage, dpath string) error {
-    os.MkdirAll(dpath, 755)
-    fpath := path.Join(dpath, img.Name())
-    return os.WriteFile(fpath, img.Content, 644)
+//	id := imgurcrawler.RandomId()
+//	img, err := imgurcrawler.GetImage(id)
+//	if err != nil {
+//	    panic(err)
+//	}
+//	imgurcrawler.SaveImage(img, "/path/to/save/directory")
+func SaveImage(img ImgurImage, dpath *string) error {
+    os.MkdirAll(*dpath, 0755)
+    fpath := path.Join(*dpath, img.Name())
+    return os.WriteFile(fpath, img.Content, 0644)
 }
