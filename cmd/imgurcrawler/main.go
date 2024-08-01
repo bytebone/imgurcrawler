@@ -43,7 +43,7 @@ func main() {
 	shouldPrint := !(*pShouldNotStdout)
 	delay := time.Duration(*pDelay)
 
-	var count int
+	var hitCount, allCount int
 	for iterator.HasNext() {
 		id := iterator.Next()
 		if shouldPrint {
@@ -53,6 +53,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		allCount += 1
 
 		if img.Exists {
 			err := imgurcrawler.SaveImage(img, pOutputFilePath)
@@ -60,7 +61,7 @@ func main() {
 				panic(err)
 			}
 
-			count += 1
+			hitCount += 1
 			if shouldPrint {
 				fmt.Println("hit")
 			}
@@ -72,7 +73,7 @@ func main() {
 			}
 		} else {
 			if shouldPrint {
-				fmt.Printf("miss (%d)\n", count)
+				fmt.Printf("miss (%d/%d)\n", hitCount, allCount)
 			}
 		}
 		if delay > 0 {
